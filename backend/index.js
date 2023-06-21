@@ -47,16 +47,12 @@ const io = new Server(server, {
 });
 // Config Socket Middleware
 app.use((req, res, next) => {
+  console.log("socket added to request");
   req.socket = io;
   req.socketClients = connectedSocketClients;
   next();
 });
 // Define your routes here
-app.get("/", (req, res) => {
-  res.send({
-    message: "API Works Fine",
-  });
-});
 
 // Working With Controllers
 app.use("/user", UserController);
