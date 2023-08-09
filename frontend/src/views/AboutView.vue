@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1 @click="sendMessage">This is an about page</h1>
+    <button @click="sendMessage">This is an about page</button>
   </div>
 </template>
 <script>

@@ -11,7 +11,7 @@ export default function (req, res, next) {
     User.findOne({ _id: id }).then((data) => {
       if (data) {
         req.auth = { user: data };
-        req.io.on("connection", (socket) => {
+        req.socket.on("connection", (socket) => {
           req.connectedSocketClients.push({
             user: data,
             connectionId: socket.client.id,

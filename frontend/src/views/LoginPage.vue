@@ -6,6 +6,7 @@
           <div class="login__field">
             <i class="login__icon fas fa-user"></i>
             <input
+              v-model="email"
               type="text"
               class="login__input"
               placeholder="User name / Email"
@@ -14,24 +15,17 @@
           <div class="login__field">
             <i class="login__icon fas fa-lock"></i>
             <input
+              v-model="password"
               type="password"
               class="login__input"
               placeholder="Password"
             />
           </div>
-          <button @click="submit" class="button login__submit">
+          <button @click.prevent="login" class="button login__submit">
             <span class="button__text">Log In Now</span>
             <i class="button__icon fas fa-chevron-right"></i>
           </button>
         </form>
-        <div class="social-login">
-          <h3>log in via</h3>
-          <div class="social-icons">
-            <a href="#" class="social-login__icon fab fa-instagram"></a>
-            <a href="#" class="social-login__icon fab fa-facebook"></a>
-            <a href="#" class="social-login__icon fab fa-twitter"></a>
-          </div>
-        </div>
       </div>
       <div class="screen__background">
         <span
@@ -50,7 +44,7 @@
     </div>
   </div>
 </template>
-<style>
+<style scoped>
 @import url("https://fonts.googleapis.com/css?family=Raleway:400,700");
 
 * {
@@ -60,7 +54,7 @@
   font-family: Raleway, sans-serif;
 }
 
-body {
+#app {
   background: linear-gradient(90deg, #c7c5f4, #776bcc);
 }
 
@@ -230,21 +224,38 @@ body {
   transform: scale(1.5);
 }
 </style>
-<script setup>
-import axios from "axios";
-const submit = () => {
-  axios
-    .post("http://localhost:3000/user/login", {
-      email: "admin@learning.com",
-      password: "password",
-    })
-    .then((res) => {
-      console.log(res.data.token);
-    });
+<script>
+import { mapActions, mapMutations } from "vuex";
+import Swal from "sweetalert2";
+
+export default {
+  data: () => ({
+    email: "",
+    password: "",
+  }),
+  methods: {
+    login() {
+      this.loginAction({ email: this.email, password: this.password })
+        .then((res) => {
+          this.setAuth(res.data);
+          Swal.fire({
+            icon: "success",
+            title: "Login Success",
+          }).then(() => {
+            this.$router.push("dashboard");
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            icon: "error",
+            title: "Login Failed",
+          });
+        });
+    },
+    ...mapActions({
+      loginAction: "loginAction",
+    }),
+    ...mapMutations(["setAuth"]),
+  },
 };
 </script>
-<style scoped>
-#app {
-  color: #2c3e50;
-}
-</style>

@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
+import auth from "./middlewares/auth.js";
 
 const connectedSocketClients = [];
 
@@ -56,7 +57,9 @@ app.use((req, res, next) => {
 
 // Working With Controllers
 app.use("/user", UserController);
-
+app.get("/verifyAuth", auth, (req, res) => {
+  res.send({ message: true });
+});
 app.use((req, res) => {
   res.status(404).send("Not Found");
 });
