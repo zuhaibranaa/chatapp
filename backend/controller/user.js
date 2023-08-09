@@ -16,7 +16,7 @@ router.post("/register", register);
 // login a user
 router.post("/login", login);
 // get all users
-router.get("/", admin, all);
+router.get("/", [admin], all);
 // get single user by id
 router.get("/:id", auth, single);
 // find a user by id and update
