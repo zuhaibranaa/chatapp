@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import auth from "./auth";
+import localStoragePlugin from "./localStoragePlugin";
 export default createStore({
   state: {},
   getters: {},
@@ -8,4 +9,5 @@ export default createStore({
   modules: {
     auth,
   },
+  plugins: [localStoragePlugin],
 });
