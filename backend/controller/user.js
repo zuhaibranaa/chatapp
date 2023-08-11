@@ -1,27 +1,113 @@
 import { Router } from "express";
 import dotenv from "dotenv";
 import register from "./UserHandlers/register.js";
-import login from "./UserHandlers/login.js";
-import all from "./UserHandlers/all.js";
+import User from "../models/user.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import single from "./UserHandlers/single.js";
 import updateSingle from "./UserHandlers/updateSingle.js";
-import deleteSingle from "./UserHandlers/deleteSingle.js";
 import auth from "../middlewares/auth.js";
 import admin from "../middlewares/admin.js";
 dotenv.config();
 const router = Router();
 
 // register new user
-router.post("/register", register);
+router.post("/register", async (req, res) => {
+  try {
+    const { name, email, password, contactNumber, isAdmin } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const user = await User.create({
+      name,
+      email,
+      contactNumber,
+      isAdmin,
+      password: hashedPassword,
+    });
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.APP_KEY, {
+      expiresIn: "1h",
+    });
+
+    // Return response with token
+    return res.status(201).json({ user, token });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 // login a user
-router.post("/login", login);
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, reason: "Invalid credentials" });
+    }
+
+    // Check if password is correct
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, reason: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.APP_KEY, {
+      expiresIn: "1h",
+    });
+
+    // Return response with token
+    return res.status(200).json({ token, user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 // get all users
-router.get("/", [admin], all);
+router.get("/", [admin], async (req, res) => {
+  let users = await User.find();
+  res.json(users);
+});
 // get single user by id
-router.get("/:id", auth, single);
+router.get("/:id", auth, async (req, res) => {
+  let user = await User.findOne({
+    _id: req.params.id,
+  });
+  if (user) {
+    res.json(user);
+  } else {
+    res.json({ success: false, reason: "User Not Found" });
+  }
+});
 // find a user by id and update
-router.patch("/:id", auth, updateSingle);
+router.patch("/:id", auth, async (req, res) => {
+  let user = await User.find(req.params.id);
+  user = req.body;
+  user.save();
+  res.json(user);
+});
 // delete a user
-router.delete("/:email", auth, deleteSingle);
+router.delete("/:email", auth, async (req, res) => {
+  let user = await User.findOneAndDelete(req.params);
+  if (user) {
+    res.json({ message: `User ${user.email} deleted Successfully` });
+  } else {
+    res.json({ message: "Failed to Delete User" });
+  }
+});
 
 export default router;
