@@ -1,12 +1,25 @@
 <template>
-  <nav>
-    <router-link to="/">Home | </router-link>
-    <router-link v-if="!authToken" to="/login">Login | </router-link>
-    <router-link v-if="!authToken" to="/register">Register | </router-link>
-    <router-link to="/about">About | </router-link>
-    <router-link v-if="authToken" to="/dashboard">Dashboard</router-link>
-  </nav>
-  <router-view />
+  <v-app>
+    <v-app-bar color="primary" density="compact">
+      <template v-slot:prepend>
+        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      </template>
+
+      <v-app-bar-title>Photos</v-app-bar-title>
+      <router-link to="/">Home</router-link>
+      <router-link v-if="!authToken" to="/login">Login</router-link>
+      <router-link v-if="!authToken" to="/register">Register</router-link>
+      <router-link to="/about">About</router-link>
+      <router-link v-if="authToken" to="/dashboard">Dashboard</router-link>
+
+      <template v-slot:append>
+        <v-btn icon="mdi-dots-vertical"></v-btn>
+      </template>
+    </v-app-bar>
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 <script>
 import { mapGetters } from "vuex";
@@ -17,25 +30,4 @@ export default {
   },
 };
 </script>
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  text-align: center;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+<style></style>
