@@ -1,11 +1,8 @@
 import { Router } from "express";
 import dotenv from "dotenv";
-import register from "./UserHandlers/register.js";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import single from "./UserHandlers/single.js";
-import updateSingle from "./UserHandlers/updateSingle.js";
 import auth from "../middlewares/auth.js";
 import admin from "../middlewares/admin.js";
 dotenv.config();
