@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import multer from "multer";
 import bodyParser from "body-parser";
-import UserController from "./controller/user.js";
+import { router as UserController } from "./controller/user.js";
 import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";

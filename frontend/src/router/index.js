@@ -52,6 +52,7 @@ const callAuthValidation = (from, next, store) => {
       next();
     })
     .catch(() => {
+      store.state.auth = null;
       next("login");
     });
 };

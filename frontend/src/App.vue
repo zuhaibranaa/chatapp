@@ -23,7 +23,11 @@
           <v-list>
             <v-list-item>
               <v-list-item-title>
-                <v-btn prepend-icon="mdi-logout" variant="plain">
+                <v-btn
+                  prepend-icon="mdi-logout"
+                  @click="doLogout"
+                  variant="plain"
+                >
                   Logout
                 </v-btn>
               </v-list-item-title>
@@ -76,7 +80,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -88,6 +92,10 @@ export default {
     ...mapGetters(["authToken"]),
   },
   methods: {
+    ...mapActions({ logoutAction: "logoutAction" }),
+    doLogout() {
+      this.logoutAction();
+    },
     navigateTo(route) {
       this.$router.push(route);
     },

@@ -7,6 +7,7 @@ import auth from "../middlewares/auth.js";
 import admin from "../middlewares/admin.js";
 dotenv.config();
 const router = Router();
+let tokenBlacklist = new Set();
 
 // register new user
 router.post("/register", async (req, res) => {
@@ -74,8 +75,17 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+// logout a user
+router.post("/logout", async (req, res) => {
+  if (req.headers["x-authorization"]) {
+    tokenBlacklist.add(req.headers["x-authorization"]);
+    res.send({ message: "Logout Successfull" });
+  } else {
+    res.send({ message: "No Auth Headers Provided" });
+  }
+});
 // get all users
-router.get("/", [admin], async (req, res) => {
+router.get("/", admin, async (req, res) => {
   let users = await User.find();
   res.json(users);
 });
@@ -107,4 +117,4 @@ router.delete("/:email", auth, async (req, res) => {
   }
 });
 
-export default router;
+export { tokenBlacklist, router };
